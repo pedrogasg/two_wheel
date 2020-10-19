@@ -10,24 +10,26 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
+    pkg_two_wheel_urdf = get_package_share_directory('two_wheel_urdf')
+
     urdf_file_name = 'two_wheel.urdf.xml'
 
     config_file_name = 'urdf.rviz'
 
     rviz_config = os.path.join(
-        get_package_share_directory('two_wheel_urdf'),
+        pkg_two_wheel_urdf,
         config_file_name)
 
     urdf = os.path.join(
-        get_package_share_directory('two_wheel_urdf'),
+        pkg_two_wheel_urdf,
         urdf_file_name)
 
     return LaunchDescription([
         
         Node(
-            package='joint_state_publisher',
-            node_executable='joint_state_publisher',
-            name='joint_state_publisher',
+            package='joint_state_publisher_gui',
+            node_executable='joint_state_publisher_gui',
+            name='joint_state_publisher_gui',
             output='screen',
             arguments=[urdf]),
 

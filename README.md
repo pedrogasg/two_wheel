@@ -6,6 +6,8 @@
 > sudo apt install
 ros-eloquent-joint-state-publisher-gui
 
+> sudo apt install ros-eloquent-gazebo-ros-pkgs
+
 > colcon build
 
 > . ./install/setup.zsh

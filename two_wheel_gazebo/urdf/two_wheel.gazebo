@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<robot name="two_wheel" xmlns:xacro="http://ros.org/wiki/xacro">
+<?xml version='1.0'?>
+<robot name="two_wheel">
+
   <!-- Base Link -->
   <link name="base_link">
     <visual>
@@ -7,9 +8,6 @@
       <geometry>
           <box size="0.5 0.5 0.25"/>
       </geometry>
-      <material name="white">
-        <color rgba="0.95 0.95 0.95 1"/>
-      </material>
     </visual>
     <!-- Base collision, mass and inertia -->
     <collision>
@@ -44,6 +42,11 @@
 
   </link>
 
+  <gazebo reference="base_link">
+    <material>Gazebo/White</material>
+    <pose>0 0 3 0 0 0</pose>
+  </gazebo>
+
   <!-- Right Wheel -->
   <link name="right_wheel">
     <visual>
@@ -51,9 +54,6 @@
       <geometry>
           <cylinder length="0.1" radius="0.2" />
       </geometry>
-      <material name="black">
-        <color rgba="0.05 0.05 0.05 1"/>
-      </material>
     </visual>
     <!-- Right Wheel collision, mass and inertia -->
     <collision>
@@ -69,11 +69,15 @@
 
   </link>
 
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
   <!-- Right Wheel joint -->
   <joint name="joint_right_wheel" type="continuous">
     <parent link="base_link"/>
     <child link="right_wheel"/>
-    <origin xyz="0 -0.30 0" rpy="0 0 0" /> 
+    <origin xyz="0 -0.30 0.025" rpy="0 0 0" /> 
     <axis xyz="0 1 0" />
   </joint>
 
@@ -84,9 +88,6 @@
       <geometry>
           <cylinder length="0.1" radius="0.2" />
       </geometry>
-      <material name="black">
-        <color rgba=".2 .2 .2 1"/>
-      </material>
     </visual>
     <!-- Left Wheel collision, mass and inertia -->
     <collision>
@@ -99,14 +100,19 @@
       <mass value="0.5"/>
       <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.005" iyz="0.0" izz="0.005"/>
     </inertial>
+
   </link>
+
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
 
   <!-- Left Wheel joint -->
   <joint name="joint_left_wheel" type="continuous">
     <parent link="base_link"/>
     <child link="left_wheel"/>
-    <origin xyz="0 0.30 0" rpy="0 0 0" /> 
-    <axis xyz="0 1 0" />
+    <origin xyz="0 0.30 0.025" rpy="0 0 0" /> 
+    <axis xyz="0 1 0"/>
   </joint>
 
 </robot>
