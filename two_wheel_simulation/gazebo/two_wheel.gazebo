@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot name="two_wheel" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <gazebo reference="base_link">
+    <material>Gazebo/White</material>
+    <pose>0 0 3 0 0 0</pose>
+  </gazebo>
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+</robot>

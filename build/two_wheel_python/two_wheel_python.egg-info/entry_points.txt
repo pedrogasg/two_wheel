@@ -1,0 +1,3 @@
+[console_scripts]
+two_wheel_python = two_wheel_python.two_wheel_python:main
+
