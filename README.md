@@ -86,6 +86,6 @@ You need to download [cuDNN for Linux](https://developer.nvidia.com/rdp/cudnn-do
 
 > . ./install/setup.zsh
 
-> ros2 launch two_wheel_urdf rviz.launch.py
-
-> 
+> ros2 launch two_wheel_simulation rviz.launch.py
+>
+> ros2 launch two_wheel_simulation gazebo.launch.py
