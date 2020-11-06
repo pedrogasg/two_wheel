@@ -58,7 +58,7 @@ def generate_launch_description():
           gazebo,
          Node(
              package='gazebo_ros',
-             node_executable='spawn_entity.py',
+             executable='spawn_entity.py',
              arguments=['-entity', 'two_wheel', '-file', urdf],
              output='screen'),
     ])

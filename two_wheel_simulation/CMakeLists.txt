@@ -17,17 +17,23 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(gazebo_dev REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(rclcpp REQUIRED)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(two_wheel_plugin src/two_wheel_plugin.cpp)
-target_include_directories(two_wheel_plugin PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+include_directories(include ${gazebo_dev_INCLUDE_DIRS} ${gazebo_ros_INCLUDE_DIRS})
 
-install(TARGETS two_wheel_plugin
-  DESTINATION lib/${PROJECT_NAME})
+link_directories(${gazebo_dev_LIBRARY_DIRS})
+
+add_library(two_wheel_plugin SHARED src/two_wheel_plugin.cpp)
+
+ament_target_dependencies(two_wheel_plugin "gazebo_dev" "gazebo_ros" "rclcpp")
+
+ament_export_libraries(two_wheel_plugin)
 
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY gazebo DESTINATION share/${PROJECT_NAME})
@@ -36,7 +42,7 @@ install(DIRECTORY rviz DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY urdf DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY worlds DESTINATION share/${PROJECT_NAME})
 
-if(BUILD_TESTING)
+if(BUILD_TESTING) 
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
   # uncomment the line when a copyright and license is not present in all source files
@@ -47,4 +53,13 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+
 ament_package()
+install(DIRECTORY include/
+  DESTINATION include)
+
+install(TARGETS
+  two_wheel_plugin
+  ARCHIVE DESTINATION lib 
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
