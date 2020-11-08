@@ -21,7 +21,7 @@ namespace gazebo_plugins
     
         void Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) override;
 
-        void Reset() override;
+        //void Reset() override;
 
     private:
 

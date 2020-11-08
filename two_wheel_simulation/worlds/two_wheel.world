@@ -3,6 +3,7 @@
   <world name="default">
     <include>
       <uri>model://ground_plane</uri>
+    </plugin>
     </include>
     <include>
       <uri>model://sun</uri>

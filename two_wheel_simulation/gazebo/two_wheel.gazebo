@@ -2,6 +2,7 @@
 <robot name="two_wheel" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <gazebo>
     <plugin name="two_wheel_plugin" filename="libtwo_wheel_plugin.so">
+      <left_joint>joint_left_wheel</left_joint>
     </plugin>
   </gazebo>
   <gazebo reference="base_link">

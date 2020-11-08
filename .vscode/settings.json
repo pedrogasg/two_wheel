@@ -1,0 +1,37 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/two_wheel_simulation",
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/foxy/lib/python3.8/site-packages"
+    ],
+    "editor.defaultFormatter": "LaurentTreguier.uncrustify",
+    "files.associations": {
+        "*.repos": "yaml",
+        "*.world": "xml",
+        "*.xacro": "xml"
+    },
+    "C_Cpp.default.intelliSenseMode": "clang-x64",
+    "C_Cpp.formatting": "Disabled",
+    "uncrustify.useReplaceOption": true,
+    "uncrustify.configPath.linux": "/opt/ros/foxy/lib/python3.8/site-packages/ament_uncrustify/configuration/ament_code_style.cfg",
+    "[cpp]": {
+        "editor.defaultFormatter": "LaurentTreguier.uncrustify"
+    },
+    "cSpell.words": [
+        "athackst",
+        "autopep",
+        "cmake",
+        "cppcheck",
+        "cpplint",
+        "deque",
+        "devcontainer",
+        "ints",
+        "noqa",
+        "pytest",
+        "rclcpp",
+        "rclpy",
+        "repos",
+        "rosidl",
+        "uncrustify",
+        "xmllint"
+    ]
+}
