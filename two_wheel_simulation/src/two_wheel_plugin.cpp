@@ -20,10 +20,13 @@ namespace gazebo_plugins
   {
   private:
     gazebo_ros::Node::SharedPtr ros_node_;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
+
     gazebo::physics::JointControllerPtr controller_;
     gazebo::physics::JointPtr left_joint_;
     gazebo::physics::JointPtr right_joint_;
     gazebo::physics::ModelPtr model_;
+
     sdf::ElementPtr sdf_;
 
     double wheel_radius_{10.0};
@@ -40,6 +43,7 @@ namespace gazebo_plugins
 
   public:
     void OnLoad(const gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf);
+    void CreateSubscription();
     void InitializeLeftJoint();
     void InitializeRightJoint();
     void SetLeftVelocity(double speed);
@@ -59,9 +63,21 @@ namespace gazebo_plugins
     wheel_radius_ = sdf_->GetElement("wheel_radius")->Get<double>();
     base_length_ = sdf_->GetElement("base_length")->Get<double>();
     
-    std::cerr << "\nThe velodyne plugin is attach to model[" <<
-        _model->GetName() << "]\n";
-    RCLCPP_WARN(this->ros_node_->get_logger(), "\n The plugin is working in the model : \n", _model->GetName());
+    RCLCPP_INFO(this->ros_node_->get_logger(),
+     "\n The plugin is working in the model : [%s] \n",
+     _model->GetName());
+
+  }
+
+  void TwoWheelPluginPrivate::CreateSubscription()
+  {
+    cmd_vel_subscription_ = ros_node_->create_subscription<geometry_msgs::msg::Twist>(
+      "cmd_vel", ros_node_->get_qos().get_subscription_qos("cmd_vel", rclcpp::QoS(1)),
+      std::bind(&TwoWheelPluginPrivate::OnCmdVel, this, std::placeholders::_1));
+
+    RCLCPP_INFO(ros_node_->get_logger(),
+     "\n Subscribed to [%s] \n",
+      cmd_vel_subscription_->get_topic_name());
   }
 
   gazebo::physics::JointPtr TwoWheelPluginPrivate::InitializeJoint(std::string _joint_name)
@@ -119,6 +135,7 @@ namespace gazebo_plugins
     impl_->OnLoad(_model, _sdf);
     impl_->InitializeLeftJoint();
     impl_->InitializeRightJoint();
+    impl_->CreateSubscription();
   }
 
   GZ_REGISTER_MODEL_PLUGIN(TwoWheelPlugin)

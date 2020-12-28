@@ -32,7 +32,7 @@ link_directories(${gazebo_dev_LIBRARY_DIRS})
 
 add_library(two_wheel_plugin SHARED src/two_wheel_plugin.cpp)
 
-ament_target_dependencies(two_wheel_plugin "gazebo_dev" "gazebo_ros" "rclcpp")
+ament_target_dependencies(two_wheel_plugin "gazebo_dev" "gazebo_ros" "rclcpp" "geometry_msgs")
 
 ament_export_libraries(two_wheel_plugin)
 
