@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot name="two_wheel" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <gazebo>
+    <plugin name="two_wheel_plugin" filename="libtwo_wheel_plugin.so">
+      <left_joint>joint_left_wheel</left_joint>
+      <right_joint>joint_right_wheel</right_joint>
+      <wheel_radius>0.20</wheel_radius>
+      <base_length>0.50</base_length>
+    </plugin>
+  </gazebo>
+  <gazebo reference="base_link">
+    <material>Gazebo/White</material>
+    <pose>0 0 3 0 0 0</pose>
+  </gazebo>
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+</robot>
