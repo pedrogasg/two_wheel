@@ -20,7 +20,9 @@ namespace gazebo_plugins
   {
   private:
     gazebo_ros::Node::SharedPtr ros_node_;
+
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
+    gazebo::event::ConnectionPtr tick_;
 
     gazebo::physics::JointControllerPtr controller_;
     gazebo::physics::JointPtr left_joint_;
@@ -32,6 +34,8 @@ namespace gazebo_plugins
     double wheel_radius_{10.0};
 
     double base_length_{10.0};
+
+    double update_period_{0.016};
     
     /// Linear velocity in X received on command (m/s).
     double target_v_{0.0};
@@ -49,6 +53,7 @@ namespace gazebo_plugins
     void SetLeftVelocity(double speed);
     void SetRightVelocity(double speed);
     void OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg);
+    void OnUpdate(const gazebo::common::UpdateInfo & _info);
   
   private:
     gazebo::physics::JointPtr InitializeJoint(std::string _joint_name);
@@ -62,18 +67,35 @@ namespace gazebo_plugins
     controller_ = _model->GetJointController();
     wheel_radius_ = sdf_->GetElement("wheel_radius")->Get<double>();
     base_length_ = sdf_->GetElement("base_length")->Get<double>();
+    auto update_rate = sdf_->GetElement("update_rate")->Get<double>();
+
+    update_period_ = 1.0 / update_rate;
     
     RCLCPP_INFO(this->ros_node_->get_logger(),
      "\n The plugin is working in the model : [%s] \n",
-     _model->GetName());
+     _model->GetScopedName());
+
+  }
+
+  void TwoWheelPluginPrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
+  {
+
 
   }
 
   void TwoWheelPluginPrivate::CreateSubscription()
   {
+    // To hte world
+
+    tick_ = gazebo::event::Events::ConnectWorldUpdateBegin(
+      std::bind(&TwoWheelPluginPrivate::OnUpdate, this, std::placeholders::_1)
+    );
+
+    // To commands
     cmd_vel_subscription_ = ros_node_->create_subscription<geometry_msgs::msg::Twist>(
       "cmd_vel", ros_node_->get_qos().get_subscription_qos("cmd_vel", rclcpp::QoS(1)),
-      std::bind(&TwoWheelPluginPrivate::OnCmdVel, this, std::placeholders::_1));
+      std::bind(&TwoWheelPluginPrivate::OnCmdVel, this, std::placeholders::_1)
+    );
 
     RCLCPP_INFO(ros_node_->get_logger(),
      "\n Subscribed to [%s] \n",
