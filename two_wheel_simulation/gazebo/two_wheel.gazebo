@@ -6,6 +6,7 @@
       <right_joint>joint_right_wheel</right_joint>
       <wheel_radius>0.20</wheel_radius>
       <base_length>0.50</base_length>
+      <update_rate>60.0</update_rate>
     </plugin>
   </gazebo>
   <gazebo reference="base_link">

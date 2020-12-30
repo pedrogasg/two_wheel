@@ -21,6 +21,8 @@ find_package(gazebo_dev REQUIRED)
 find_package(gazebo_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -32,7 +34,7 @@ link_directories(${gazebo_dev_LIBRARY_DIRS})
 
 add_library(two_wheel_plugin SHARED src/two_wheel_plugin.cpp)
 
-ament_target_dependencies(two_wheel_plugin "gazebo_dev" "gazebo_ros" "rclcpp" "geometry_msgs")
+ament_target_dependencies(two_wheel_plugin "gazebo_dev" "gazebo_ros" "rclcpp" "geometry_msgs" "nav_msgs" "tf2")
 
 ament_export_libraries(two_wheel_plugin)
 
