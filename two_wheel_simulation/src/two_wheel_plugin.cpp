@@ -7,6 +7,7 @@
 #include <sdf/sdf.hh>
 
 #include <gazebo_ros/node.hpp>
+#include <gazebo_ros/conversions/builtin_interfaces.hpp>
 
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/pose2_d.hpp>
@@ -28,6 +29,7 @@ namespace gazebo_plugins
   private:
     gazebo_ros::Node::SharedPtr ros_node_;
 
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscription_;
     gazebo::event::ConnectionPtr tick_;
 
@@ -63,6 +65,8 @@ namespace gazebo_plugins
   public:
     void OnLoad(const gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf);
     void CreateSubscription();
+    void CreatePublisher();
+    void PopulateCovarience();
     void InitializeLeftJoint();
     void InitializeRightJoint();
     void OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg);
@@ -71,6 +75,7 @@ namespace gazebo_plugins
   private:
     gazebo::physics::JointPtr InitializeJoint(std::string _joint_name);
     void UpdateOdometry(const gazebo::common::Time & _current_time);
+    void PublishOdometry(const gazebo::common::Time & _current_time);
     void SetLeftVelocity(double speed);
     void SetRightVelocity(double speed);
   };
@@ -86,11 +91,28 @@ namespace gazebo_plugins
     auto update_rate = sdf_->GetElement("update_rate")->Get<double>();
 
     update_period_ = 1.0 / update_rate;
-    
+
     RCLCPP_INFO(this->ros_node_->get_logger(),
      "\n The plugin is working in the model : [%s] \n",
      _model->GetScopedName());
 
+  }
+
+  void TwoWheelPluginPrivate::PopulateCovarience()
+  {
+    odom_.pose.covariance[0] = 0.00001;
+    odom_.pose.covariance[7] = 0.00001;
+    odom_.pose.covariance[14] = 1000000000000.0;
+    odom_.pose.covariance[21] = 1000000000000.0;
+    odom_.pose.covariance[28] = 1000000000000.0;
+    odom_.pose.covariance[35] = 0.001;
+
+    odom_.twist.covariance[0] = 0.00001;
+    odom_.twist.covariance[7] = 0.00001;
+    odom_.twist.covariance[14] = 1000000000000.0;
+    odom_.twist.covariance[21] = 1000000000000.0;
+    odom_.twist.covariance[28] = 1000000000000.0;
+    odom_.twist.covariance[35] = 0.001;
   }
 
   void TwoWheelPluginPrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
@@ -102,6 +124,9 @@ namespace gazebo_plugins
     if(seconds_since < update_period_){
       return;
     }
+
+    PublishOdometry(_info.simTime);
+
     last_time_update_ = _info.simTime;
   }
 
@@ -122,6 +147,16 @@ namespace gazebo_plugins
     RCLCPP_INFO(ros_node_->get_logger(),
      "\n Subscribed to [%s] \n",
       cmd_vel_subscription_->get_topic_name());
+  }
+
+  void TwoWheelPluginPrivate::CreatePublisher()
+  {
+    odom_publisher_ = ros_node_->create_publisher<nav_msgs::msg::Odometry>(
+      "odom", ros_node_->get_qos().get_publisher_qos("odom", rclcpp::QoS(1)));
+
+    RCLCPP_INFO(ros_node_->get_logger(),
+     "\n Advertise odometry on [%s] \n",
+      odom_publisher_->get_topic_name());
   }
 
   gazebo::physics::JointPtr TwoWheelPluginPrivate::InitializeJoint(std::string _joint_name)
@@ -196,6 +231,14 @@ namespace gazebo_plugins
 
   }
 
+  void TwoWheelPluginPrivate::PublishOdometry(const gazebo::common::Time & _current_time)
+  {
+    odom_.header.frame_id = "odom";
+    odom_.child_frame_id = "base_footprint";
+    odom_.header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(_current_time);
+    odom_publisher_->publish(odom_);
+  }
+
   void TwoWheelPluginPrivate::OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg)
   {
     std::lock_guard<std::mutex> scoped_lock(lock_);
@@ -223,6 +266,8 @@ namespace gazebo_plugins
     impl_->OnLoad(_model, _sdf);
     impl_->InitializeLeftJoint();
     impl_->InitializeRightJoint();
+    impl_->PopulateCovarience();
+    impl_->CreatePublisher();
     impl_->CreateSubscription();
   }
 
